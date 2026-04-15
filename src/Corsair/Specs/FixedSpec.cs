@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Corsair.Abstractions;
 
@@ -28,7 +29,18 @@ public abstract class FixedSpec<T> : IFixedSpec<T>
     private readonly List<IFixedFieldSpec<T>> _fields = new List<IFixedFieldSpec<T>>();
 
     /// <inheritdoc/>
-    public IReadOnlyList<IFixedFieldSpec<T>> Fields => _fields.AsReadOnly();
+    public IReadOnlyList<IFixedFieldSpec<T>> Fields
+    {
+        get
+        {
+            // If any field has order = 0 (unset), honour declaration order for all.
+            // Only sort when every field carries an explicit non-zero value.
+            if (_fields.Any(f => f.Order == 0))
+                return _fields.AsReadOnly();
+
+            return _fields.OrderBy(f => f.Order).ToList();
+        }
+    }
 
     // -----------------------------------------------------------------------
     // Fluent builder
@@ -57,6 +69,11 @@ public abstract class FixedSpec<T> : IFixedSpec<T>
     /// when the value implements <see cref="IFormattable"/>; otherwise ignored.
     /// Example: <c>"D8"</c>, <c>"yyyy-MM-dd"</c>, <c>"F2"</c>.
     /// </param>
+    /// <param name="order">
+    /// Explicit column position. Defaults to <c>0</c> (unset). Ordering is applied only
+    /// when every field in the spec carries a non-zero value; if any field is <c>0</c>
+    /// declaration order is used for all fields.
+    /// </param>
     /// <returns>The current spec instance to allow method chaining.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="width"/> is less than or equal to zero.
@@ -69,12 +86,13 @@ public abstract class FixedSpec<T> : IFixedSpec<T>
         int width,
         FieldAlignment alignment = FieldAlignment.Left,
         char padding = ' ',
-        string? format = null)
+        string? format = null,
+        int order = 0)
     {
         if (width <= 0)
             throw new ArgumentOutOfRangeException(nameof(width), "Field width must be greater than zero.");
 
-        _fields.Add(new FixedFieldSpec<T>(selector, width, alignment, padding, format));
+        _fields.Add(new FixedFieldSpec<T>(selector, width, alignment, padding, format, order));
         return this;
     }
 }

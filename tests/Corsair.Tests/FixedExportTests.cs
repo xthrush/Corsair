@@ -35,9 +35,10 @@ public sealed class FixedExportTests
             int width,
             FieldAlignment alignment = FieldAlignment.Left,
             char padding = ' ',
-            string? format = null)
+            string? format = null,
+            int order = 0)
         {
-            Field(selector, width, alignment, padding, format);
+            Field(selector, width, alignment, padding, format, order);
             return this;
         }
     }
@@ -270,5 +271,67 @@ public sealed class FixedExportTests
         // Stream must still be usable after Write returns.
         Assert.True(ms.CanRead);
         Assert.True(ms.CanWrite);
+    }
+
+    // -----------------------------------------------------------------------
+    // Explicit field ordering
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public void Export_AllFieldsHaveExplicitOrder_OutputsSortedByOrderValue()
+    {
+        // Declared Name-first, Age-second, but order values reverse them.
+        var spec = Spec()
+            .Add(x => x.Name, width: 6,                                      order: 2)
+            .Add(x => x.Age,  width: 4, alignment: FieldAlignment.Right, order: 1);
+
+        var result = _exporter.Export(spec, new[] { new Rec { Name = "Alice", Age = 30 } });
+
+        // Age  (order 1, w=4, right): "  30"
+        // Name (order 2, w=6, left ): "Alice "
+        Assert.Equal("  30Alice ", result);
+    }
+
+    [Fact]
+    public void Export_AnyFieldOrderIsZero_FallsBackToInsertionOrder()
+    {
+        // Name has an explicit order but Age uses the default 0 → insertion order wins.
+        var spec = Spec()
+            .Add(x => x.Name, width: 6,                                      order: 2)
+            .Add(x => x.Age,  width: 4, alignment: FieldAlignment.Right, order: 0);
+
+        var result = _exporter.Export(spec, new[] { new Rec { Name = "Alice", Age = 30 } });
+
+        // Insertion order: Name first, Age second.
+        Assert.Equal("Alice   30", result);
+    }
+
+    [Fact]
+    public void Export_AllOrderZero_UsesInsertionOrder()
+    {
+        var spec = Spec()
+            .Add(x => x.Name, width: 6)
+            .Add(x => x.Age,  width: 4, alignment: FieldAlignment.Right);
+
+        var result = _exporter.Export(spec, new[] { new Rec { Name = "Alice", Age = 30 } });
+
+        Assert.Equal("Alice   30", result);
+    }
+
+    [Fact]
+    public void Export_ThreeFieldsExplicitOrder_OutputsInCorrectSequence()
+    {
+        var spec = Spec()
+            .Add(x => x.Name,   width: 5,                                        order: 3)
+            .Add(x => x.Amount, width: 7, alignment: FieldAlignment.Right, format: "F2", order: 1)
+            .Add(x => x.Age,    width: 4, alignment: FieldAlignment.Right, order: 2);
+
+        var result = _exporter.Export(spec,
+            new[] { new Rec { Name = "Bob", Age = 7, Amount = 12.5m } });
+
+        // Amount (order 1, w=7, right, F2): "  12.50"
+        // Age    (order 2, w=4, right     ): "   7"
+        // Name   (order 3, w=5, left      ): "Bob  "
+        Assert.Equal("  12.50   7Bob  ", result);
     }
 }

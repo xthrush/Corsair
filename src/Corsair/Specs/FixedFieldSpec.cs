@@ -15,13 +15,15 @@ internal sealed class FixedFieldSpec<T> : IFixedFieldSpec<T>
         int width,
         FieldAlignment alignment,
         char padding,
-        string? format)
+        string? format,
+        int order)
     {
         Name      = ExtractMemberName(selector);
         Width     = width;
         Alignment = alignment;
         Padding   = padding;
         Format    = format;
+        Order     = order;
 
         var compiled = selector.Compile();
         Getter = record => compiled(record);
@@ -44,6 +46,9 @@ internal sealed class FixedFieldSpec<T> : IFixedFieldSpec<T>
 
     /// <inheritdoc/>
     public Func<T, object?> Getter { get; }
+
+    /// <inheritdoc/>
+    public int Order { get; }
 
     // -----------------------------------------------------------------------
     // Helpers

@@ -21,4 +21,13 @@ public interface IFieldSpec<T>
 
     /// <summary>A compiled delegate that extracts the field value from a record instance.</summary>
     Func<T, object?> Getter { get; }
+
+    /// <summary>
+    /// Explicit column position used to sort fields before export.
+    /// A value of <c>0</c> (the default) means no explicit position is assigned.
+    /// Ordering is only applied when <b>every</b> field in the spec carries a
+    /// non-zero value; if any field retains <c>0</c> the original declaration
+    /// order is preserved for all fields.
+    /// </summary>
+    int Order { get; }
 }

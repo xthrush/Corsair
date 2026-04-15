@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Corsair.Abstractions;
 
@@ -38,7 +39,16 @@ public abstract class DelimitedSpec<T> : IDelimitedSpec<T>
     public bool IncludeHeader { get; protected set; } = true;
 
     /// <inheritdoc/>
-    public IReadOnlyList<IDelimitedFieldSpec<T>> Fields => _fields.AsReadOnly();
+    public IReadOnlyList<IDelimitedFieldSpec<T>> Fields
+    {
+        get
+        {
+            if (_fields.Any(f => f.Order == 0))
+                return _fields.AsReadOnly();
+
+            return _fields.OrderBy(f => f.Order).ToList();
+        }
+    }
 
     // -----------------------------------------------------------------------
     // Fluent builder
@@ -60,6 +70,11 @@ public abstract class DelimitedSpec<T> : IDelimitedSpec<T>
     /// when the value implements <see cref="IFormattable"/>; otherwise ignored.
     /// Example: <c>"yyyy-MM-dd"</c>, <c>"F4"</c>.
     /// </param>
+    /// <param name="order">
+    /// Explicit column position. Defaults to <c>0</c> (unset). Ordering is applied only
+    /// when every field in the spec carries a non-zero value; if any field is <c>0</c>
+    /// declaration order is used for all fields.
+    /// </param>
     /// <returns>The current spec instance to allow method chaining.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="selector"/> is not a simple member-access expression.
@@ -67,9 +82,10 @@ public abstract class DelimitedSpec<T> : IDelimitedSpec<T>
     protected DelimitedSpec<T> Field(
         Expression<Func<T, object?>> selector,
         string? header = null,
-        string? format = null)
+        string? format = null,
+        int order = 0)
     {
-        _fields.Add(new DelimitedFieldSpec<T>(selector, header, format));
+        _fields.Add(new DelimitedFieldSpec<T>(selector, header, format, order));
         return this;
     }
 }

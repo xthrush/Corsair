@@ -13,11 +13,13 @@ internal sealed class DelimitedFieldSpec<T> : IDelimitedFieldSpec<T>
     internal DelimitedFieldSpec(
         Expression<Func<T, object?>> selector,
         string? header,
-        string? format)
+        string? format,
+        int order)
     {
         Name   = ExtractMemberName(selector);
         Header = header ?? Name;
         Format = format;
+        Order  = order;
 
         var compiled = selector.Compile();
         Getter = record => compiled(record);
@@ -34,6 +36,9 @@ internal sealed class DelimitedFieldSpec<T> : IDelimitedFieldSpec<T>
 
     /// <inheritdoc/>
     public Func<T, object?> Getter { get; }
+
+    /// <inheritdoc/>
+    public int Order { get; }
 
     // -----------------------------------------------------------------------
     // Helpers
