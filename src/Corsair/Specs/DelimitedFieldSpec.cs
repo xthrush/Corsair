@@ -11,7 +11,7 @@ namespace Corsair.Specs;
 internal sealed class DelimitedFieldSpec<T> : IDelimitedFieldSpec<T>
 {
     internal DelimitedFieldSpec(
-        Expression<Func<T, object>> selector,
+        Expression<Func<T, object?>> selector,
         string? header,
         string? format)
     {
@@ -39,7 +39,7 @@ internal sealed class DelimitedFieldSpec<T> : IDelimitedFieldSpec<T>
     // Helpers
     // -----------------------------------------------------------------------
 
-    private static string ExtractMemberName(Expression<Func<T, object>> selector)
+    private static string ExtractMemberName(Expression<Func<T, object?>> selector)
     {
         var body = selector.Body;
 

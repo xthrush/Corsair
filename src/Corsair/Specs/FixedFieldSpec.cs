@@ -11,7 +11,7 @@ namespace Corsair.Specs;
 internal sealed class FixedFieldSpec<T> : IFixedFieldSpec<T>
 {
     internal FixedFieldSpec(
-        Expression<Func<T, object>> selector,
+        Expression<Func<T, object?>> selector,
         int width,
         FieldAlignment alignment,
         char padding,
@@ -49,7 +49,7 @@ internal sealed class FixedFieldSpec<T> : IFixedFieldSpec<T>
     // Helpers
     // -----------------------------------------------------------------------
 
-    private static string ExtractMemberName(Expression<Func<T, object>> selector)
+    private static string ExtractMemberName(Expression<Func<T, object?>> selector)
     {
         var body = selector.Body;
 

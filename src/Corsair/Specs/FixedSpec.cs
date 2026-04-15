@@ -65,7 +65,7 @@ public abstract class FixedSpec<T> : IFixedSpec<T>
     /// Thrown when <paramref name="selector"/> is not a simple member-access expression.
     /// </exception>
     protected FixedSpec<T> Field(
-        Expression<Func<T, object>> selector,
+        Expression<Func<T, object?>> selector,
         int width,
         FieldAlignment alignment = FieldAlignment.Left,
         char padding = ' ',

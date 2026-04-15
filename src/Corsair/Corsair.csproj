@@ -8,7 +8,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>Corsair</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Tim Taylor</Authors>
     <Description>Export strongly typed DTOs to fixed-length and delimited flat files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

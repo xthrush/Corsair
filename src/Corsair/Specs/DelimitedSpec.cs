@@ -65,7 +65,7 @@ public abstract class DelimitedSpec<T> : IDelimitedSpec<T>
     /// Thrown when <paramref name="selector"/> is not a simple member-access expression.
     /// </exception>
     protected DelimitedSpec<T> Field(
-        Expression<Func<T, object>> selector,
+        Expression<Func<T, object?>> selector,
         string? header = null,
         string? format = null)
     {
