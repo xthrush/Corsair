@@ -1,0 +1,70 @@
+## Build Folders (VS + .NET)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Tt]est[Rr]esult*/
+[Rr]elease/
+[Dd]ebug/
+
+## Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## VS Code
+.vscode/
+.history/
+*.code-workspace
+
+## Dotnet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+*.snupkg
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## Logs
+*.log
+*.tlog
+
+## Packages
+*.nupkg
+*.snupkg
+*.nuspec
+.packages/
+.nuget/
+
+## Publish
+*.publishsettings
+*.Publish.xml
+
+## ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+## Coverage and test output
+TestResult.xml
+*.coverage
+*.coveragexml
+*.trx
+*.TestResults/
+*.nunit.xml
+
+## Temporary files
+*.tmp
+*.temp
+~$*
+
+# Build output
+**/bin/
+**/obj/
+.vs/
+
